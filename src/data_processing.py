@@ -4,7 +4,7 @@ from fuzzywuzzy import process
 
 def load_data(file_path):
     if file_path.endswith('.csv'):
-        return pd.read_csv(file_path, sep=';')
+        return pd.read_csv(file_path, sep=';', low_memory=False)
     elif file_path.endswith('.xlsx'):
         return pd.read_excel(file_path)
     else:
@@ -21,12 +21,11 @@ def process_sellout(sellout_df, reg_city_db):
     sellout_df['City_code'] = sellout_df['city'].apply(lambda x: match_city_code(x, reg_city_db))
 
     # Группировка данных
-    report = sellout_df.groupby(['Region_code', 'City_code', 'vendor_article']).agg({
-        'sellout'                                    : 'sum',
-        'sales_amount_with_VAT_in_the_purchase_price': 'sum'
-    }).reset_index()
+    report = sellout_df.groupby(['Region_code', 'City_code', 'vendor_article']).sum({
+        'sellout', 'sales_amount_with_VAT_in_the_purchase_price'})
 
     return report
+    # return sellout_df
 
 
 def match_city(city, reg_city_db):

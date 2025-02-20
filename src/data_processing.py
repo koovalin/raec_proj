@@ -21,8 +21,8 @@ def process_sellout(sellout_df, reg_city_db):
     sellout_df['City_code'] = sellout_df['city'].apply(lambda x: match_city_code(x, reg_city_db))
 
     # Группировка данных
-    report = sellout_df.groupby(['Region_code', 'City_code', 'vendor_article']).sum({
-        'sellout', 'sales_amount_with_VAT_in_the_purchase_price'})
+    report = sellout_df.groupby(['member_name', 'Region_code', 'City_code', 'vendor_article']).sum([
+        'sellout', 'sales_amount_with_VAT_in_the_purchase_price'])
 
     return report
     # return sellout_df
@@ -43,6 +43,6 @@ def process_stock(stock_df):
     stock_df = stock_df[['date', 'raec_member_name', 'vendor_article', 'available']]
 
     # Группировка данных
-    report = stock_df.groupby(['vendor_article']).agg({'available': 'sum'}).reset_index()
+    report = stock_df.groupby(['raec_member_name', 'vendor_article']).sum(['available']).reset_index()
     report.rename(columns={'available': 'Stock_qty'}, inplace=True)
     return report
